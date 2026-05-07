@@ -16,7 +16,7 @@ import { SetupNotice } from '../components/SetupNotice';
 
 interface WordState {
   word: string;
-  status: 'pending' | 'correct';
+  status: 'pending' | 'correct' | 'incorrect';
   lastAttempt: 'correct' | 'incorrect' | null;
   showFeedback: boolean;
   attempts: number;
@@ -232,7 +232,7 @@ export function ReadingInterface() {
 
         return {
           ...word,
-          status: isCorrect ? ('correct' as const) : ('pending' as const),
+          status: isCorrect ? ('correct' as const) : ('incorrect' as const),
           lastAttempt: isCorrect ? ('correct' as const) : ('incorrect' as const),
           showFeedback: true,
           attempts: word.attempts + 1,
@@ -271,9 +271,18 @@ export function ReadingInterface() {
 
         currentWordIndexRef.current = index + 1;
         setCurrentWordIndex(index + 1);
-      } else {
+        continue;
+      }
+
+      if (index === currentWords.length - 1) {
+        pendingSpokenWordsRef.current = [];
+        stopListening();
+        void finishReading(nextScore, nextWords, nextAttempts);
         return;
       }
+
+      currentWordIndexRef.current = index + 1;
+      setCurrentWordIndex(index + 1);
     }
   }
 
@@ -406,7 +415,7 @@ export function ReadingInterface() {
                     : 'Selected paragraph'}
               </p>
               <p className="text-sm text-gray-500 mt-2">
-                Press Start, then read out loud. Words turn green when matched. If a word is wrong, it flashes red and you can try again.
+                Press Start, then read out loud. Words turn green when matched. If a word is wrong, it turns red and the session moves on.
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -476,7 +485,7 @@ export function ReadingInterface() {
                         px-2 py-1 rounded-lg transition-all select-none
                         ${wordState.status === 'pending' ? 'hover:bg-gray-100' : ''}
                         ${wordState.status === 'correct' ? 'bg-green-100 text-green-700' : ''}
-                        ${wordState.lastAttempt === 'incorrect' ? 'bg-red-100 text-red-700' : ''}
+                        ${wordState.status === 'incorrect' ? 'bg-red-100 text-red-700' : ''}
                         ${index === currentWordIndex && wordState.status === 'pending' ? 'ring-2 ring-blue-400' : ''}
                       `}
                       animate={
