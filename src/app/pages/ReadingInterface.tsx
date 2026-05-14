@@ -498,19 +498,16 @@ export function ReadingInterface() {
                       {wordState.word}
                     </motion.span>
 
-                    {isSpeechSynthesisSupported() &&
-                      index === currentWordIndex &&
-                      wordState.status === 'pending' &&
-                      wordState.lastAttempt === 'incorrect' && (
-                        <button
-                          type="button"
-                          onClick={() => handlePlayWord(wordState.word)}
-                          className="absolute left-1/2 -translate-x-1/2 -top-8 p-1.5 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50"
-                          aria-label="Play pronunciation"
-                        >
-                          <Volume2 className="w-4 h-4 text-gray-700" />
-                        </button>
-                      )}
+                    {isSpeechSynthesisSupported() && wordState.status === 'incorrect' && (
+                      <button
+                        type="button"
+                        onClick={() => handlePlayWord(wordState.word)}
+                        className="absolute left-1/2 -translate-x-1/2 -top-8 p-1.5 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50"
+                        aria-label="Play pronunciation"
+                      >
+                        <Volume2 className="w-4 h-4 text-gray-700" />
+                      </button>
+                    )}
 
                     <AnimatePresence>
                       {wordState.showFeedback && (
